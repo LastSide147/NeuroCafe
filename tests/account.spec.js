@@ -33,12 +33,11 @@ test('Кнопки кликабельны', async ({ page }) => {
 test('Добавление(статус 201) и удаление аккаунта(статус 200)', async ({ page }) => {
     await page.goto('https://lukoil-admin.neuro-city.ru/accounts');
     
-    const userName = "Автотест для Фио";
+    const userName = "Новый для Фио";
     const randomIdFromEmail = Math.floor(Math.random() * 100000);
 
     await(page.getByRole('button', {name: "Добавить аккаунт"})).click();
-    await page.locator('input[type="file"]').setInputFiles('C:/Users/zemts/Pictures/UuJegv.jpg') // домашний адрес 
-    // await page.locator('input[type="file"]').setInputFiles('C:/Users/Razrab-1509/Desktop/Attach/2.png') // рабочий адрес 
+    await page.locator('input[type="file"]').setInputFiles('C:/FirstImage.jpg')
     await expect(page.getByText("Новый аккаунт")).toBeVisible();
     await page.locator('input[placeholder="ФИО"]').pressSequentially(`${userName}`);
     await(page.getByRole('button', {name: 'Выберите должность'})).click();
@@ -72,14 +71,14 @@ test('Добавление(статус 201) и удаление аккаунт�
 
   await page.locator('input[type="text"][placeholder="ФИО сотрудника"]').pressSequentially(`${userName}`);
   await page.getByRole('button', { name: 'Найти' }).click();
-  await expect(page.getByText("Автотест")).toBeVisible();
-  await page.getByText("Автотест").click();
+  await expect(page.getByText("Новый")).toBeVisible();
+  await page.getByText("Новый").click();
 
   // Проверяем доступность кнопок "Удалить" и "Редактировать"
   await expect(page.getByRole('button', { name: "Удалить" })).toBeEnabled();
   await expect(page.getByRole('button', { name: "Редактировать" })).toBeEnabled();
 
-  // Начинаем ждать ответ на удаление *до* клика
+  // Начинаем ждать ответ на удаление до клика
   const responsePromiseDelete = page.waitForResponse(resp =>
     resp.url().includes(`/user/${userId}`) && resp.request().method() === 'DELETE' );
   
@@ -109,8 +108,7 @@ test('Редактирование аккаунта (статус 200). БЕЗ �
     const randomIdFromEmail = Math.floor(Math.random() * 100000);
 
     await(page.getByRole('button', {name: "Добавить аккаунт"})).click();
-    await page.locator('input[type="file"]').setInputFiles('C:/Users/zemts/Pictures/UuJegv.jpg') // домашний адрес 
-    // await page.locator('input[type="file"]').setInputFiles('C:/Users/Razrab-1509/Desktop/Attach/2.png') // рабочий адрес 
+    await page.locator('input[type="file"]').setInputFiles('C:/FirstImage.jpg')
     await expect(page.getByText("Новый аккаунт")).toBeVisible();
     await page.locator('input[placeholder="ФИО"]').pressSequentially(`${nameToBeforeChange}`);
     await(page.getByRole('button', {name: 'Выберите должность'})).click();
@@ -139,23 +137,24 @@ test('Редактирование аккаунта (статус 200). БЕЗ �
     await expect(page.getByText("Автотест")).toBeVisible();
     await page.getByText("Автотест").click();
 
-    await page.locator('input[type="text"][placeholder="ФИО сотрудника"]').clear(); //Далее поле ломает работу теста
+    await page.locator('input[type="text"][placeholder="ФИО сотрудника"]').clear();
 
     await page.getByRole('button', {name: 'Редактировать'}).click();
+  
+    await page.locator('button[class*="_avatar__button"]').click({ force: true });
+    await page.locator('input[type="file"]').setInputFiles('C:/SecondImage.jpg');
 
-    await page.screenshot({ path: 'before-click.png' });
-    
-    // await page.locator('button:has(img[alt="Аватар пользователя"])').waitFor({ state: 'visible', timeout: 30000} );
-    await page.locator('button._avatar__button_tpzhe_124').click({ force: true }); // элемент не достаточно надежен. По-другому пока не выходит
-    // await page.locator('button:has(img[alt="Аватар пользователя"])').click();
-    await page.locator('input[type="file"]').setInputFiles('C:/Users/zemts/Pictures/12.jpg'); // домашний адрес
     await page.locator('input[placeholder = "ФИО"]').clear();
     await page.locator('input[type="text"][placeholder = "ФИО"]').pressSequentially(`${nameToAfterChange}`);
+
     await(page.locator('div[role="button"][aria-haspopup="listbox"]')).click();
     await(page.getByRole('option', {name: "Менеджер"})).click();
+
     await page.locator('input[placeholder = "E-mail"]').clear();
     await page.locator('input[placeholder = "E-mail"]').pressSequentially(`${randomIdFromEmail}manager.from.autotest@neuro-city.com`);
+
     await page.locator('input[placeholder="●●●●●●"]').pressSequentially('NewPassword1956<>');
+
     // await page.locator('input[placeholder = "Телефон"]').clear();
     // await page.locator('input[placeholder = "Телефон"]').fill('9807777777', {delay: 1000}); // делает ввод 077 77 77
     // await page.locator('input[placeholder = "Телефон"]').fill(`${changeNumber}`); // делает ввод 077 766 55 
